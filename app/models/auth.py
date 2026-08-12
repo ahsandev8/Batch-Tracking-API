@@ -1,16 +1,24 @@
-from pydantic import BaseModel, Field, EmailStr ,ConfigDict
-from uuid import UUID
 from datetime import datetime
+from uuid import UUID
 
-class Login(BaseModel):
-    username: str = Field(..., json_schema_extra={"example": "john_doe"})
-    password: str = Field(..., json_schema_extra={"example": "password123"})
+from pydantic import BaseModel, EmailStr, Field, ConfigDict
 
 
 class Register(BaseModel):
-    username: str = Field(..., json_schema_extra={"example": "john_doe"})
-    email: EmailStr = Field(..., json_schema_extra={"example": "zDd2G@example.com"})
-    password: str = Field(..., json_schema_extra={"example": "password123"})
+    username: str = Field(..., min_length=3, max_length=50, examples=["john_doe"])
+    email: EmailStr = Field(..., examples=["john@example.com"])
+    password: str = Field(..., min_length=8, examples=["password123"])
+
+
+class Login(BaseModel):
+    username: str = Field(..., examples=["john_doe"])
+    password: str = Field(..., examples=["password123"])
+
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+
 
 class UserProfile(BaseModel):
     id: UUID
