@@ -31,3 +31,10 @@ class BatchResponse(BaseModel):
 
 class BatchStatusUpdate(BaseModel):
     status: BatchStatus
+
+class PaginatedBatchResponse(BaseModel):
+    total: int
+    page: int
+    page_size: int
+    total_pages: int
+    items: list[BatchResponse]

@@ -1,6 +1,7 @@
 from uuid import UUID
 from app.models.batch import BatchResponse
 from app.database.db import Session
+from sqlalchemy import select, func
 from app.database.schema.batch_schema import Batch
 from app.models.batch import BatchCreate, BatchStatusUpdate,BatchStatus
 
@@ -39,3 +40,33 @@ class BatchService:
     db.commit()
     db.refresh(batch)
     return batch
+
+  def list_batches(
+        self,
+        db: Session,
+        status: BatchStatus | None = None,
+        batch_type: str | None = None,
+        page: int = 1,
+        page_size: int = 10,
+    ) -> tuple[list[Batch], int]:
+        query = select(Batch)
+        count_query = select(func.count()).select_from(Batch)
+
+        if status is not None:
+            query = query.where(Batch.status == status)
+            count_query = count_query.where(Batch.status == status)
+
+        if batch_type is not None:
+            query = query.where(Batch.batch_type == batch_type)
+            count_query = count_query.where(Batch.batch_type == batch_type)
+
+        total = db.scalar(count_query) or 0
+
+        query = (
+            query.order_by(Batch.created_at.desc())
+            .offset((page - 1) * page_size)
+            .limit(page_size)
+        )
+
+        items = list(db.scalars(query).all())
+        return items, total
