@@ -3,7 +3,8 @@ from sqlalchemy.orm import Session
 
 from app.service.auth import AuthService
 from app.models.auth import Login, Register
-from app.database.db import get_db  # adjust import if your dependency lives elsewhere
+from app.core.security import create_access_token
+from app.database.db import get_db
 
 router = APIRouter(prefix="/auth")
 auth_service = AuthService()
@@ -17,7 +18,14 @@ async def login(request: Login, db: Session = Depends(get_db)):
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid username or password",
         )
-    return {"message": "Login successful", "username": user.username}
+
+    access_token = create_access_token(data={"sub": str(user.id), "username": user.username})
+
+    return {
+        "access_token": access_token,
+        "token_type": "bearer",
+    }
+
 
 
 @router.post("/register")

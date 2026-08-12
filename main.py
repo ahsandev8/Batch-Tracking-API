@@ -6,9 +6,6 @@ import os
 from dotenv import load_dotenv
 from app.database.db import init_db
 
-
-
-
 load_dotenv()
 app = FastAPI()
 app.include_router(api_router)
