@@ -34,7 +34,11 @@ class Batch(Base):
     )
 
     status: Mapped[BatchStatus] = mapped_column(
-        Enum(BatchStatus),
+        Enum(
+            BatchStatus,
+            name="batchstatus",
+            values_callable=lambda enum_cls: [member.value for member in enum_cls],
+        ),
         default=BatchStatus.QUEUED,
         nullable=False,
     )

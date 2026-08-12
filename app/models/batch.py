@@ -8,6 +8,7 @@ class BatchStatus(str, Enum):
     QUEUED = "queued"
     PROCESSING = "processing"
     COMPLETED = "completed"
+    FAILED = "failed"
 
 class BatchCreate(BaseModel):
     sample_id: str
